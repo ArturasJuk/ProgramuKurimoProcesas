@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="3.4" method="upgrade">
+	<name>com_linkchecker</name>
+	<creationDate>June 2016</creationDate>
+	<author>Marco Beierer</author>
+	<authorEmail>email@marcobeierer.com</authorEmail>
+	<authorUrl>https://www.marcobeierer.com</authorUrl>
+	<copyright>Copyright (c) 2016 Marco Beierer</copyright>
+	<license>GNU GPL v3 or later</license>
+	<version>1.11.0</version>
+	<description>Link Checker component for Joomla.</description>
+
+	<administration>
+		<menu>linkchecker</menu>
+		<files folder="backend">
+			<folder>libs</folder>
+			<folder>views</folder>
+			<filename>access.xml</filename>
+			<filename>config.xml</filename>
+			<filename>controller.php</filename>
+			<filename>linkchecker.php</filename>
+		</files>
+
+		<languages folder="language/backend">
+			<language tag="en-GB">en-GB/en-GB.com_linkchecker.ini</language>
+			<language tag="en-GB">en-GB/en-GB.com_linkchecker.sys.ini</language>
+		</languages>
+	</administration>
+
+	<media folder="media" destination="com_linkchecker">
+		<folder>js</folder>
+		<folder>css</folder>
+	</media>
+
+	<updateservers>
+		<server type="extension" name="Link Checker Update Site">https://static.marcobeierer.com/joomla-extensions/linkchecker/update.xml</server>
+	</updateservers>
+</extension>

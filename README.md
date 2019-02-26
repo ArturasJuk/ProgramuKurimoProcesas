@@ -17,3 +17,27 @@ Programu kurimo proceso uzduotis, joomla plugin/extension, deadlinku tikrinimas
     <li>tikrinti linkus ir resursu url(img)</li>
     <li>linku tikrinimas pagal response headerio, jei response >=4XX => deadlinkas 
 </ol>
+
+# Joomla server(iki kovo 26d) - [http://prif16-3.joomla.com/](http://prif16-3.joomla.com/)
+## Joomla Control Panel
+> [controlPanel](https://prif16-3.joomla.com/administrator/)  
+> User: cumid  
+> Pass: EbB5tWR7
+
+## ftp
+> IP(port:21): 104.37.86.23  
+> User: cumid  
+> Pass: EbB5tWR7
+
+## MySQL
+> Host Name: db  
+> Port: 3306  
+> User: cumid  
+> Pass: EbB5tWR7
+
+## Application Information
+> App Name: Joomla  
+> App Version: 3.9.3  
+> App Dbprefix: nmy_  
+> App User: cumid  
+> Password: EbB5tWR7  
