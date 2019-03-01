@@ -20,6 +20,9 @@ Programu kurimo proceso uzduotis, joomla plugin/extension, deadlinku tikrinimas
 
 # Joomla server(iki kovo 26d) - [http://prif16-3.joomla.com/](http://prif16-3.joomla.com/)
 ## Joomla Control Panel
+> [hostPanel](https://ccp.cloudaccess.net/clientarea.php)  
+> User: arturas.juknevicius@stud.vgtu.lt  
+> Pass: slapta123  
 > [controlPanel](https://prif16-3.joomla.com/administrator/)  
 > User: cumid  
 > Pass: EbB5tWR7
