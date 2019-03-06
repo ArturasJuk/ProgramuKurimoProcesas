@@ -18,6 +18,9 @@ Programu kurimo proceso uzduotis, joomla plugin/extension, deadlinku tikrinimas
     <li>linku tikrinimas pagal response headerio, jei response >=4XX => deadlinkas 
 </ol>
 
+# Darbo architektūra
+![alt text](https://raw.githubusercontent.com/ArturasJuk/ProgramuKurimoProcesas/master/architecture.PNG?token=AV1CdlfHu0WibxiLgw5pTotXlx2H9lm4ks5cf7hfwA%3D%3D)
+
 # Joomla server(iki kovo 26d) - [http://prif16-3.joomla.com/](http://prif16-3.joomla.com/)
 ## Joomla Control Panel
 > [hostPanel](https://ccp.cloudaccess.net/clientarea.php)  
