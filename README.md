@@ -1,4 +1,4 @@
-# ProgramuKurimoProcesas
+# CrawlerUpdater
 Programu kurimo proceso uzduotis, joomla plugin/extension, deadlinku tikrinimas
 * Egz - 50%
 * Kolis - 20%
