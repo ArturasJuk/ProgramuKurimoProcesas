@@ -54,8 +54,8 @@ public function rel2abs($rel, $base)
 
 /** 
 * \brief Takes home url of some site, returns array of dead links
-* #param $home_url the home URL where the dead link finding starts. Should be landing page URL
-* @return array of deadlinks and info [[deadLink, whereFound, whyDead], [deadLink, whereFound, whyDead], ...]
+* @param $home_url the home URL where the dead link finding starts. Should be landing page URL
+* @return array - of deadlinks and info [[deadLink, whereFound, whyDead], [deadLink, whereFound, whyDead], ...]
 * The functionn performs a breath-first search trough the provided website
 * FInds all links in current URL, tries to download them and if it can't
 * adds to deadliink result array
