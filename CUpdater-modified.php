@@ -1,65 +1,69 @@
 <?php
 /**
- * @author Daniel Dimitrov <daniel@compojoom.com>
- * @copyright    Copyright (C) 2008 - 2013 compojoom.com. All rights reserved.
+ * @author Prif163 <Arturas.Juknevicius@stud.vgtu.lt>
+ * @copyright    Copyright (C) 2019 VGTU. All rights reserved.
  * @license        GNU General Public License version 2 or later
  */
-// no direct access
+/**
+* \brief no direct access
+* used to mark a secure entry point into Joomla. The defined or die check makes sure that _JEXEC has been defined in the pathway to get to the file. It also prevents accidental injection of variables through a register globals attack that trick the PHP file into thinking it is inside the application when it really isn't.
+*/
 defined('_JEXEC') or die;
 /**
- * Joomla! Update notification plugin
- * This plugin checks at specific intervals for new updates
- * and sends a notification if an update is found
+ * Joomla! Dead link finder plugin
+ * This plugin checks at specific intervals for dead links in admins website
+ * It tehn sends emails to the admins default email or a custom address
+ * THe email contains the dead link, the HTTP error code taht was found and 
  *
- * Special thanks to O.Schwab <service@castle4us.de> for coming with the idea
- * in the first place :)
  *
  * @package        Joomla.Plugin
- * @subpackage    System.cupdater
+ * @subpackage    System.DeadLinkFinder
  */
 class plgSystemCupdater extends JPlugin
 {
 	
-//relative linka transformuoja i absoliutu
+/**
+* \brief transforms relative links to absolute links`
+* @param $rel linked passed to functioned. assumed to be realtive.
+* @param $base URL where the relative linkw as found
+* @return  absolute link
+* The function checks if the passed, assumed relative, link is actually relative. If it'scandir
+* absolute it returns the passed link, otherwise it transforms teh link to an absolute link
+*/
 public function rel2abs($rel, $base)
 {
-    /* return if already absolute URL */
-    if (parse_url($rel, PHP_URL_SCHEME) != '') return $rel;
+    if (parse_url($rel, PHP_URL_SCHEME) != '') return $rel;    /**< return if already absolute URL */
 
-    /* empty section link, can be ignored*/
-    if($rel == '#')return $base;
+    if($rel == '#')return $base; /**< empty section link, can be ignored*/
 
-    /* queries and anchors */
-    if ($rel[0]=='#' || $rel[0]=='?') return $base.$rel;
+    if ($rel[0]=='#' || $rel[0]=='?') return $base.$rel; /**< queries and anchors */
 
-    /* parse base URL and convert to local variables: $scheme, $host, $path */
-    extract(parse_url($base));
+    extract(parse_url($base)); /**< parse base URL and convert to local variables: $scheme, $host, $path */
 
-    /* remove non-directory element from path */
-    $path = preg_replace('#/[^/]*$#', '', $path);
+    $path = preg_replace('#/[^/]*$#', '', $path); /**< remove non-directory element from path */
 
-    /* destroy path if relative url points to root */
-    if ($rel[0] == '/') $path = '';
+    if ($rel[0] == '/') $path = ''; /**< destroy path if relative url points to root */
 
-    /* dirty absolute URL */
-    $abs = "$host$path/$rel";
+    $abs = "$host$path/$rel"; /**< dirty absolute URL */
 
-    /* replace '//' or '/./' or '/foo/../' with '/' */
-    $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#');
+    $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#'); /**< replace '//' or '/./' or '/foo/../' with '/' */
     for($n=1; $n>0; $abs=preg_replace($re, '/', $abs, -1, $n)) {}
 
-    /* absolute URL is ready! */
-    return $scheme.'://'.$abs;
+    return $scheme.'://'.$abs; /**< absolute URL is ready! */
 }
 
-
-// Takes home url of some site, returns array of dead links
-//returns array [[deadLink, whereFound, whyDead], [deadLink, whereFound, whyDead], ...]
-
+/** 
+* \brief Takes home url of some site, returns array of dead links
+* #param $home_url the home URL where the dead link finding starts. Should be landing page URL
+* @return array of deadlinks and info [[deadLink, whereFound, whyDead], [deadLink, whereFound, whyDead], ...]
+* The functionn performs a breath-first search trough the provided website
+* FInds all links in current URL, tries to download them and if it can't
+* adds to deadliink result array
+*/
 public function bfs($home_url) 
   {
-    $Q = new SplQueue(); //Queue for storing current urls
-    $Qfrom = new SplQueue(); //Queue for storing url where current url was found
+    $Q = new SplQueue(); /**<Queue for storing current urls*/
+    $Qfrom = new SplQueue(); /**<Queue for storing url where current url was found*/
     $set = array($home_url => 1); 
     $result = array();
     $Q->enqueue($home_url);
@@ -80,8 +84,7 @@ public function bfs($home_url)
         $html = false;
       }
 
-      //linkas mires, ar isvis neegzistuoja domain
-      if($html == false  || !strpos($http_response_header[0], 'OK')) 
+      if($html == false  || !strpos($http_response_header[0], 'OK')) /**<First check if link is dead. */
       {
         $httpHeader = 'No header, failed to fetch';
 
@@ -96,8 +99,7 @@ public function bfs($home_url)
         continue;
       }
 
-      //jei prefixas neatitinka home/root page tai tame puslapyje linku neieskom
-      if(substr($cur,0,strlen($home_url)) != $home_url) 
+      if(substr($cur,0,strlen($home_url)) != $home_url) /**<Checks if prefix of current link matches base URL. If not doesn't check it */
         continue;
       
       $regex = '#(href|src)="[^"]+"#'; 
@@ -108,13 +110,10 @@ public function bfs($home_url)
 
       foreach ($urls[0] as &$url)
       {
-        //pasalinam trailing kabute "
-        $url = substr($url, 0, -1);
+        $url = substr($url, 0, -1); /**< removes trailing "*/
 
-        //pasalinam query string
-        $url = preg_replace('#\?.+#', '', $url);
+        $url = preg_replace('#\?.+#', '', $url); /**<removes querry string */
 
-        //gaunam absoliutu linka
         $url = rel2abs($url, $cur);
         
         if(!array_key_exists($url, $set))
@@ -128,6 +127,9 @@ public function bfs($home_url)
 
     return $result;
   }
+	/**
+	* #param recipient array 
+	*/
 	
     private $recipients = array();
     /**
@@ -135,10 +137,9 @@ public function bfs($home_url)
      */
     public function onAfterRender()
     {
-        if (!$this->doIHaveToRun()) {
+        if (!$this->doIHaveToRun()) { /**< checks if plugin needs to run */
             return false;
         }
-//      so we are running??? Then let us load some languages
         $lang = JFactory::getLanguage();
         $lang->load('plg_system_cupdater', JPATH_ADMINISTRATOR, 'en-GB', true);
         $lang->load('plg_system_cupdater', JPATH_ADMINISTRATOR, $lang->getDefault(), true);
@@ -146,24 +147,14 @@ public function bfs($home_url)
         // clear the cache - otherwise we get problems in backend
         $cache = JFactory::getCache();
         $cache->clean('com_plugins');
-		// note for Joomla 3
-		// the JHttpTransportCurl class is throwing an exception when it is unable to get the content out
-		// of an url. The exception is not caught in the Joomla updater class and this leads to a nasty
-		// exception thrown out at the user. That is why we catch it here and send an email to the
-		// people that should be notified about that
-		// normally joomla should disable such urls, but since they don't react on the Exception this will
-		// happen each time the update script is run
-		// that is why the administrator will need to find the url causing the problem and disable it for the server
 		try {
 			$deadLinks = $this->bfs(JURI::base()); 
 		} catch (UnexpectedValueException $e) {
-			// let us send a mail to the user
 			$title = JText::_('PLG_CUPDATER_ERROR_UPDATE');
 			$body = JText::_('PLG_CUPDATER_ERROR_UPDATE_DESC');
 			$body .= "\n" . JText::_('PLG_CUPDATER_DISCLAIMER') . "\n";
 			$this->sendMail($title, $body);
 			$this->setLastRunTimestamp();
-			// and exit...
 			return false;
 		}
         if (count($deadLinks)) {
@@ -195,6 +186,7 @@ public function bfs($home_url)
         return true;
     }
     /**
+	* \brief gets text for config on next update time
      * @return string - our next update text
      */
     private function nextUpdateText()
@@ -217,6 +209,7 @@ public function bfs($home_url)
         return $body;
     }
     /**
+	* \bried sets up email
      * @param $title - the title of the mail
      * @param $body - the body of the mail
      */
@@ -232,7 +225,9 @@ public function bfs($home_url)
         $mail->Send();
     }
     /**
-     *
+     * \brief gets recipients of email
+	 * Checks config to see if theres one admin recipient or a custom list.
+	 * Gets list from config.
      * @return array - all recepients
      */
     private function getRecipients()
@@ -269,11 +264,8 @@ public function bfs($home_url)
         return $this->recipients;
     }
     /**
-     * "Do I have to run?" - the age old question. Let it be answered by checking the
-     * last execution timestamp, stored in the component's configuration.
+     * \brief checks the last execution timestamp, stored in the component's configuration.
      *
-     * this function is copied from the asexpirationnotify plugin so all credits go to
-     * Nicholas K. Dionysopoulos / AkeebaBackup.com
      * @return bool
      */
     private function doIHaveToRun()
@@ -287,10 +279,7 @@ public function bfs($home_url)
         return ($now >= $nextRunUnix);
     }
     /**
-     * Saves the timestamp of this plugin's last run
-     * this function is copied from the asexpirationnotify plugin so all credits go to
-     * Nicholas K. Dionysopoulos / AkeebaBackup.com
-     *
+     * \brief Saves the timestamp of this plugin's last run
      */
     private function setLastRunTimestamp()
     {
