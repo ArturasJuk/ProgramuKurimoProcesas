@@ -21,29 +21,3 @@ Programu kurimo proceso uzduotis, joomla plugin/extension, deadlinku tikrinimas
 # Darbo architektūra
 ![alt text](https://raw.githubusercontent.com/ArturasJuk/ProgramuKurimoProcesas/master/architecture.PNG?token=AV1CdlfHu0WibxiLgw5pTotXlx2H9lm4ks5cf7hfwA%3D%3D)
 
-# Joomla server(iki kovo 26d) - [http://prif16-3.joomla.com/](http://prif16-3.joomla.com/)
-## Joomla Control Panel
-> [hostPanel](https://ccp.cloudaccess.net/clientarea.php)  
-> User: arturas.juknevicius@stud.vgtu.lt  
-> Pass: slapta123  
-> [controlPanel](https://prif16-3.joomla.com/administrator/)  
-> User: cumid  
-> Pass: EbB5tWR7
-
-## ftp
-> IP(port:21): 104.37.86.23  
-> User: cumid  
-> Pass: EbB5tWR7
-
-## MySQL
-> Host Name: db  
-> Port: 3306  
-> User: cumid  
-> Pass: EbB5tWR7
-
-## Application Information
-> App Name: Joomla  
-> App Version: 3.9.3  
-> App Dbprefix: nmy_  
-> App User: cumid  
-> Password: EbB5tWR7  
