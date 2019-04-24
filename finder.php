@@ -111,17 +111,25 @@
     return $result;
   }
 
-  $deadLinkai = bfs("https://dead-links.freesite.host/"); 
+  if ($argv[1])
+    $websiteUrl = (string)$argv[1];
+  else
+    $websiteUrl = "https://dead-links.freesite.host/";
 
-  echo "CHECKING FOR DEADLINKS...\n";
-  $output = '';
-  $separator = ',';
-  foreach ($deadLinkai as &$dead)
-  {
-    $output .= 
-      '"' . $dead[0] . '"' . $separator
-      '"' . $dead[1] . '"' . $separator
-      '"' . $dead[2] . '"' . "\n";
+  try {
+    echo "\nChecking for deadlinks in " . $websiteUrl . ")\n";
+
+    $deadLinkai = bfs($websiteUrl);
+
+    $output = '';
+    $separator = ',';
+    foreach ($deadLinkai as &$dead)
+    {
+      $output .= "\"" . $dead[0] . '"' . $separator . '"' . $dead[1] . '"' . $separator . '"' . $dead[2] . '"' . "\n";
+    }
+    file_put_contents ( "output.csv" , $output);
+    echo "\nCompleted, results saved in \"output.csv\"\n";
+  } catch (\Throwable $th) {
+    echo "ERROR: Invalid url format, quitting...\n";
   }
-  file_put_contents ( "output.csv" , $output);
 ?>
