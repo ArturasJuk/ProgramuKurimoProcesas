@@ -121,8 +121,8 @@
 
     $deadLinkai = bfs($websiteUrl);
 
-    $output = '';
     $separator = ',';
+    $output = '"Deadlink url"' . $separator . '"found in"' . '"response"' . "\n";
     foreach ($deadLinkai as &$dead)
     {
       $output .= "\"" . $dead[0] . '"' . $separator . '"' . $dead[1] . '"' . $separator . '"' . $dead[2] . '"' . "\n";
