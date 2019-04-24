@@ -1,123 +1,127 @@
 <?php
+/**
+ * @author Prif163 <arturas.juknevicius@stud.vgtu.lt>
+ * @copyright    Copyright (C) 2019 VGTU. All rights reserved.
+ * @license        GNU General Public License version 2 or later
+ */
 
-  //relative linka transformuoja i absoliutu
+ /**
+* \brief transforms relative links to absolute links`
+* @param $rel linked passed to functioned. assumed to be realtive.
+* @param $base URL where the relative linkw as found
+* @return  absolute link
+* The function checks if the passed, assumed relative, link is actually relative. If it'scandir
+* absolute it returns the passed link, otherwise it transforms teh link to an absolute link
+*/
   function rel2abs($rel, $base)
   {
-      /* return if already absolute URL */
-      if (parse_url($rel, PHP_URL_SCHEME) != '') return $rel;
+    if (parse_url($rel, PHP_URL_SCHEME) != '') return $rel;    /**< return if already absolute URL */
 
-      /* empty section link, can be ignored*/
-      if($rel == '#')return $base;
+    if($rel == '#')return $base; /**< empty section link, can be ignored*/
 
-      /* queries and anchors */
-      if ($rel[0]=='#' || $rel[0]=='?') return $base.$rel;
+    if ($rel[0]=='#' || $rel[0]=='?') return $base.$rel; /**< queries and anchors */
 
-      /* parse base URL and convert to local variables: $scheme, $host, $path */
-      extract(parse_url($base));
+    extract(parse_url($base)); /**< parse base URL and convert to local variables: $scheme, $host, $path */
 
-      /* remove non-directory element from path */
-      $path = preg_replace('#/[^/]*$#', '', $path);
+    $path = preg_replace('#/[^/]*$#', '', $path); /**< remove non-directory element from path */
 
-      /* destroy path if relative url points to root */
-      if ($rel[0] == '/') $path = '';
+    if ($rel[0] == '/') $path = ''; /**< destroy path if relative url points to root */
 
-      /* dirty absolute URL */
-      $abs = "$host$path/$rel";
+    $abs = "$host$path/$rel"; /**< dirty absolute URL */
 
-      /* replace '//' or '/./' or '/foo/../' with '/' */
-      $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#');
-      for($n=1; $n>0; $abs=preg_replace($re, '/', $abs, -1, $n)) {}
+    $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#'); /**< replace '//' or '/./' or '/foo/../' with '/' */
+    for($n=1; $n>0; $abs=preg_replace($re, '/', $abs, -1, $n)) {}
 
-      /* absolute URL is ready! */
-      return $scheme.'://'.$abs;
+    return $scheme.'://'.$abs; /**< absolute URL is ready! */
   }
 
-
-  // Takes home url of some site, returns array of dead links
-  //returns array [[deadLink, whereFound, whyDead], [deadLink, whereFound, whyDead], ...]
-
+/** 
+* \brief Takes home url of some site, returns array of dead links
+* @param $home_url the home URL where the dead link finding starts. Should be landing page URL
+* @return array - of deadlinks and info [[deadLink, whereFound, whyDead], [deadLink, whereFound, whyDead], ...]
+* The functionn performs a breath-first search trough the provided website
+* FInds all links in current URL, tries to download them and if it can't
+* adds to deadliink result array
+*/
   function bfs($home_url) 
+  {
+    $Q = new SplQueue(); //Queue for storing current urls
+    $Qfrom = new SplQueue(); //Queue for storing url where current url was found
+    $set = array($home_url => 1); 
+    $result = array();
+    $Q->enqueue($home_url);
+    $Qfrom->enqueue($home_url);
+
+    while(!$Q->isEmpty())
     {
-      $Q = new SplQueue(); //Queue for storing current urls
-      $Qfrom = new SplQueue(); //Queue for storing url where current url was found
-      $set = array($home_url => 1); 
-      $result = array();
-      $Q->enqueue($home_url);
-      $Qfrom->enqueue($home_url);
+      $cur = $Q->dequeue();
+      $from = $Qfrom->dequeue();
+      echo $cur . "\n";
 
-      while(!$Q->isEmpty())
+      try
       {
-        $cur = $Q->dequeue();
-        $from = $Qfrom->dequeue();
-        echo $cur . "\n";
-
-        try
-        {
-          $html = file_get_contents($cur);
-        }
-        catch(Exception $e)
-        {
-          $html = false;
-        }
-
-        //linkas mires, ar isvis neegzistuoja domain
-        if($html == false  || !strpos($http_response_header[0], 'OK')) 
-        {
-          $httpHeader = 'No header, failed to fetch';
-
-          if(isset($http_response_header))
-            $httpHeader = $http_response_header[0];
-          
-          if(strpos($httpHeader, 'OK'))
-            continue;
-          
-          array_push($result, array($cur, $from, $httpHeader));
-
-          continue;
-        }
-
-        //jei prefixas neatitinka home/root page tai tame puslapyje linku neieskom
-        if(substr($cur,0,strlen($home_url)) != $home_url) 
-          continue;
-        
-        $regex = '#(href|src)="[^"]+"#'; 
-        preg_match_all($regex, $html, $urls);
-
-        $urls[0] = str_replace ( 'href="', '', $urls[0]);
-        $urls[0] = str_replace ( 'src="', '', $urls[0]);
-
-        foreach ($urls[0] as &$url)
-        {
-          //pasalinam trailing kabute "
-          $url = substr($url, 0, -1);
-
-          //pasalinam query string
-          $url = preg_replace('#\?.+#', '', $url);
-
-          //gaunam absoliutu linka
-          $url = rel2abs($url, $cur);
-          
-          if(!array_key_exists($url, $set))
-          {
-            $Q->enqueue($url);
-            $Qfrom->enqueue($cur);
-            $set[$url]=1;
-          }
-        }
+        $html = file_get_contents($cur);
+      }
+      catch(Exception $e)
+      {
+        $html = false;
       }
 
-      return $result;
+      if($html == false  || !strpos($http_response_header[0], 'OK')) /**<First check if link is dead. */
+      {
+        $httpHeader = 'No header, failed to fetch';
+
+        if(isset($http_response_header))
+          $httpHeader = $http_response_header[0];
+        
+        if(strpos($httpHeader, 'OK'))
+          continue;
+        
+        array_push($result, array($cur, $from, $httpHeader));
+
+        continue;
+      }
+
+      if(substr($cur,0,strlen($home_url)) != $home_url) /**<Checks if prefix of current link matches base URL. If not doesn't check it */
+        continue;
+      
+      $regex = '#(href|src)="[^"]+"#'; 
+      preg_match_all($regex, $html, $urls);
+
+      $urls[0] = str_replace ( 'href="', '', $urls[0]);
+      $urls[0] = str_replace ( 'src="', '', $urls[0]);
+
+      foreach ($urls[0] as &$url)
+      {
+        $url = substr($url, 0, -1); /**< removes trailing "*/
+
+        $url = preg_replace('#\?.+#', '', $url); /**<removes querry string */
+
+        $url = rel2abs($url, $cur);
+        
+        if(!array_key_exists($url, $set))
+        {
+          $Q->enqueue($url);
+          $Qfrom->enqueue($cur);
+          $set[$url]=1;
+        }
+      }
     }
+
+    return $result;
+  }
 
   $deadLinkai = bfs("https://dead-links.freesite.host/"); 
 
-  //echo "\n\n\nOUTPUT:\n\n\n";
-  //var_dump($deadLinkai);
+  echo "CHECKING FOR DEADLINKS...\n";
   $output = '';
+  $separator = ',';
   foreach ($deadLinkai as &$dead)
   {
-    $output .= $dead[0] . ' ' . $dead[1] . ' '  . $dead[2] . "\n";
+    $output .= 
+      '"' . $dead[0] . '"' . $separator
+      '"' . $dead[1] . '"' . $separator
+      '"' . $dead[2] . '"' . "\n";
   }
-  file_put_contents ( "output.txt" , $output);
-
+  file_put_contents ( "output.csv" , $output);
 ?>
