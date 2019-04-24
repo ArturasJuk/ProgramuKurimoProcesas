@@ -121,11 +121,11 @@
 
     $deadLinkai = bfs($websiteUrl);
 
-    $separator = ',';
-    $output = '"Deadlink url"' . $separator . '"found in"' . '"response"' . "\n";
+    $separator = ';';
+    $output = '"Deadlink url"' . $separator . '"found in"' . $separator . '"response"' . "\n";
     foreach ($deadLinkai as &$dead)
     {
-      $output .= "\"" . $dead[0] . '"' . $separator . '"' . $dead[1] . '"' . $separator . '"' . $dead[2] . '"' . "\n";
+      $output .= '"' . $dead[0] . '"' . $separator . '"' . $dead[1] . '"' . $separator . '"' . $dead[2] . '"' . "\n";
     }
     file_put_contents ( "output.csv" , $output);
     echo "\nCompleted, results saved in \"output.csv\"\n";
