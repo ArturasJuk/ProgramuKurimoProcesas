@@ -96,6 +96,8 @@
         $url = substr($url, 0, -1); /**< removes trailing "*/
 
         $url = preg_replace('#\?.+#', '', $url); /**<removes querry string */
+        
+        $url = preg_replace('@#.+@', '', $url);
 
         $url = rel2abs($url, $cur);
         
@@ -111,25 +113,42 @@
     return $result;
   }
 
-  if ($argv[1])
-    $websiteUrl = (string)$argv[1];
-  else
-    $websiteUrl = "https://dead-links.freesite.host/";
-
-  try {
-    echo "\nChecking for deadlinks in " . $websiteUrl . ")\n";
-
-    $deadLinkai = bfs($websiteUrl);
-
-    $separator = ',';
-    $output = '"Deadlink url"' . $separator . '"found in"' . '"response"' . "\n";
+/** 
+* \brief Takes array of deadLinks, formats them and returns as a single string,
+* each property is separated by separator character
+* each deadlink is separated by new line
+* @param $deadLinkai array of dealink items, each deadlink has 3 values([deadLink, whereFound, whyDead]) 
+* @param $separator optional separator character for CSV files, default value is ","
+* @return string formatted CSV file content, each cell is surrounded with double quotes("),
+* for each deadlink 3 collums are created(["Deadlink url", "Found in", "Response"])
+*/
+  function GetCSV($deadLinkai, $separator = ',')
+  {
+    $output = '"Deadlink url"' . $separator . '"Found in"' . $separator . '"Response"' . "\n";
     foreach ($deadLinkai as &$dead)
     {
-      $output .= "\"" . $dead[0] . '"' . $separator . '"' . $dead[1] . '"' . $separator . '"' . $dead[2] . '"' . "\n";
+      $output .= '"' . $dead[0] . '"' . $separator . '"' . $dead[1] . '"' . $separator . '"' . $dead[2] . '"' . "\n";
     }
-    file_put_contents ( "output.csv" , $output);
-    echo "\nCompleted, results saved in \"output.csv\"\n";
-  } catch (\Throwable $th) {
-    echo "ERROR: Invalid url format, quitting...\n";
+    return $output;
   }
+
+  $websiteUrl = (array_key_exists(1, $argv)) ? (string)$argv[1] : "https://dead-links.freesite.host/";
+  echo "\nChecking for deadlinks in " . $websiteUrl . ")\n";
+
+  $deadLinkai = bfs($websiteUrl);
+
+  $output = GetCSV($deadLinkai);
+
+  if (count($deadLinkai) > 0)
+  {
+    if (file_put_contents( "output.csv" , $output))
+      echo "\nCheck completed, results saved in \"output.csv\"\n";
+    else
+      echo "\nERROR: Writting results to file \"output.csv\" failed\n";
+  }
+  else
+  {
+    echo "\nCheck completed, no deadlinks were found.\n";
+  }
+
 ?>
