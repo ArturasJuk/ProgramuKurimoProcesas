@@ -5,6 +5,5 @@ var finder_8php =
     [ "rel2abs", "finder_8php.html#a4e4cea4d20ee382d37b15301ce67d5cb", null ],
     [ "$deadLinkai", "finder_8php.html#a9deed632da4e45952218a0e840ba466c", null ],
     [ "$output", "finder_8php.html#a73004ce9cd673c1bfafd1dc351134797", null ],
-    [ "$websiteUrl", "finder_8php.html#a006f7d64e435467d431da862b0a08c38", null ],
-    [ "else", "finder_8php.html#a8669bcb9f570188beb714ccda0156fab", null ]
+    [ "$websiteUrl", "finder_8php.html#a006f7d64e435467d431da862b0a08c38", null ]
 ];
