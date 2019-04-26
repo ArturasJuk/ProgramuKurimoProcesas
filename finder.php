@@ -1,5 +1,6 @@
 <?php
-/**
+/** @file 
+* php file that contains the dead link finder script.
  * @author Prif163 <arturas.juknevicius@stud.vgtu.lt>
  * @copyright    Copyright (C) 2019 VGTU. All rights reserved.
  * @license        GNU General Public License version 2 or later
@@ -9,39 +10,41 @@
 * \brief transforms relative links to absolute links`
 * @param $rel linked passed to functioned. assumed to be realtive.
 * @param $base URL where the relative linkw as found
-* @return  absolute link
-* The function checks if the passed, assumed relative, link is actually relative. If it'scandir
-* absolute it returns the passed link, otherwise it transforms teh link to an absolute link
+* @return $scheme.'://'.$abs absolute link
+* The function checks if the passed, assumed relative, link is actually relative. If it's
+*    absolute it returns the passed link, otherwise it transforms teh link to an absolute link
 */
   function rel2abs($rel, $base)
   {
-    if (parse_url($rel, PHP_URL_SCHEME) != '') return $rel;    /**< return if already absolute URL */
+    if (parse_url($rel, PHP_URL_SCHEME) != '') return $rel;    /* return if already absolute URL */
 
-    if($rel == '#')return $base; /**< empty section link, can be ignored*/
+    if($rel == '#')return $base; /* empty section link, can be ignored*/
 
-    if ($rel[0]=='#' || $rel[0]=='?') return $base.$rel; /**< queries and anchors */
+    if ($rel[0]=='#' || $rel[0]=='?') return $base.$rel; /* queries and anchors */
 
-    extract(parse_url($base)); /**< parse base URL and convert to local variables: $scheme, $host, $path */
+    extract(parse_url($base)); /* parse base URL and convert to local variables: $scheme, $host, $path */
 
-    $path = preg_replace('#/[^/]*$#', '', $path); /**< remove non-directory element from path */
+    $path = preg_replace('#/[^/]*$#', '', $path); /* remove non-directory element from path */
 
-    if ($rel[0] == '/') $path = ''; /**< destroy path if relative url points to root */
+    if ($rel[0] == '/') $path = ''; /* destroy path if relative url points to root */
 
-    $abs = "$host$path/$rel"; /**< dirty absolute URL */
+    $abs = "$host$path/$rel"; /* dirty absolute URL */
 
-    $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#'); /**< replace '//' or '/./' or '/foo/../' with '/' */
+    $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#'); /* replace '//' or '/./' or '/foo/../' with '/' */
     for($n=1; $n>0; $abs=preg_replace($re, '/', $abs, -1, $n)) {}
 
-    return $scheme.'://'.$abs; /**< absolute URL is ready! */
+    return $scheme.'://'.$abs; /* absolute URL is ready! */
   }
+
 
 /** 
 * \brief Takes home url of some site, returns array of dead links
 * @param $home_url the home URL where the dead link finding starts. Should be landing page URL
-* @return array - of deadlinks and info [[deadLink, whereFound, whyDead], [deadLink, whereFound, whyDead], ...]
+* @return $result array of deadlinks and info [[deadLink, whereFound, whyDead], [deadLink, whereFound, whyDead], ...]
+* @exception e throws exeption if downloaded address is empty
 * The functionn performs a breath-first search trough the provided website
-* FInds all links in current URL, tries to download them and if it can't
-* adds to deadliink result array
+*    FInds all links in current URL, tries to download them and if it can't
+*    adds to deadliink result array
 */
   function bfs($home_url) 
   {
@@ -67,7 +70,7 @@
         $html = false;
       }
 
-      if($html == false  || !strpos($http_response_header[0], 'OK')) /**<First check if link is dead. */
+      if($html == false  || !strpos($http_response_header[0], 'OK')) /*First check if link is dead. */
       {
         $httpHeader = 'No header, failed to fetch';
 
@@ -82,7 +85,7 @@
         continue;
       }
 
-      if(substr($cur,0,strlen($home_url)) != $home_url) /**<Checks if prefix of current link matches base URL. If not doesn't check it */
+      if(substr($cur,0,strlen($home_url)) != $home_url) /*Checks if prefix of current link matches base URL. If not doesn't check it */
         continue;
       
       $regex = '#(href|src)="[^"]+"#'; 
@@ -93,9 +96,9 @@
 
       foreach ($urls[0] as &$url)
       {
-        $url = substr($url, 0, -1); /**< removes trailing "*/
+        $url = substr($url, 0, -1); /* removes trailing "*/
 
-        $url = preg_replace('#\?.+#', '', $url); /**<removes querry string */
+        $url = preg_replace('#\?.+#', '', $url); /*removes querry string */
         
         $url = preg_replace('@#.+@', '', $url);
 
@@ -114,13 +117,11 @@
   }
 
 /** 
-* \brief Takes array of deadLinks, formats them and returns as a single string,
-* each property is separated by separator character
-* each deadlink is separated by new line
+* \brief creates .csv file with deadlink information.
+* Takes array of deadLinks, formats them and returns as a single string, each property is separated by separator character each deadlink is separated by new line
 * @param $deadLinkai array of dealink items, each deadlink has 3 values([deadLink, whereFound, whyDead]) 
 * @param $separator optional separator character for CSV files, default value is ","
-* @return string formatted CSV file content, each cell is surrounded with double quotes("),
-* for each deadlink 3 collums are created(["Deadlink url", "Found in", "Response"])
+* @return $output string formatted CSV file content, each cell is surrounded with double quotes("), for each deadlink 3 collums are created(["Deadlink url", "Found in", "Response"])
 */
   function GetCSV($deadLinkai, $separator = ',')
   {
@@ -132,14 +133,14 @@
     return $output;
   }
 
-  error_reporting( error_reporting() & ~E_NOTICE ); /**< Disables E_NOTICE from reporting"*/
+  error_reporting( error_reporting() & ~E_NOTICE ); /* Disables E_NOTICE from reporting"*/
 
-  $websiteUrl = (array_key_exists(1, $argv)) ? (string)$argv[1] : "https://dead-links.freesite.host/";
+  $websiteUrl = (array_key_exists(1, $argv)) ? (string)$argv[1] : "https://dead-links.freesite.host/"; /**< Holds link to website that needs to be checked. Takes passed argument. If no argument was passed, it checks a default address. */
   echo "\nChecking for deadlinks in \"" . $websiteUrl . "\"\n";
 
-  $deadLinkai = bfs($websiteUrl);
+  $deadLinkai = bfs($websiteUrl); /**< holds array with deadlinks and information about them */
 
-  $output = GetCSV($deadLinkai);
+  $output = GetCSV($deadLinkai); /**< holds formated .CSV file content */
 
   if (count($deadLinkai) > 0)
   {

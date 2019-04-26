@@ -1,0 +1,58 @@
+.TH "md__r_e_a_d_m_e" 3 "Fri Apr 26 2019" "Version 2.0." "finder" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+md__r_e_a_d_m_e \- Dead link finder, kaip naudotis: 
+
+.IP "1." 4
+atsidaryti projekto direktorijoje terminala
+.IP "2." 4
+programa paleidziama terminale rasant: 
+.br
+ \fCphp \fBfinder\&.php\fP url\fP
+.br
+ vietoje url irasomas puslapio url, pvz: \fCphp \fBfinder\&.php\fP https://www.google.com\fP
+.br
+ nenurodzius url bus tikrinamas 'https://dead-links\&.freesite\&.host/' puslapis
+.IP "3." 4
+pradejus tikrinima parasomas pranesimas, pvz: \fCChecking for deadlinks in 'https://www\&.google\&.com'\fP
+.IP "4." 4
+programos veikimo metu terminale isvedami tikrinami url
+.IP "5." 4
+baigus tikrinima parasomas baigimo pranesimas, pvz: \fCCheck completed, results saved in 'output\&.csv'\fP
+.PP
+.IP "\(bu" 2
+jei buvo rasta mirusiu link'u:
+.IP "  \(bu" 4
+rezultatai issaugomi \fCoutput\&.csv\fP faile
+.br
+
+.IP "  \(bu" 4
+jei toks failas jau yra - jis perrasomas
+.IP "  \(bu" 4
+jei failas atidarytas - bus isvestas klaidos pranesimas:
+.br
+ \fCERROR: Writting results to file 'output\&.csv' failed\fP
+.PP
+
+.IP "\(bu" 2
+jei nerasta mirusiu link'u:
+.IP "  \(bu" 4
+terminale isvedamas pranesimas:
+.br
+ \fCCheck completed, no deadlinks were found\&.\fP
+.PP
+
+.PP
+.PP
+terminalas = console/terminal
+.br
+ csv failo celiu atskyrimo simbolis yra kablelis(\fC,\fP) ji galima pakeisti programos kode nurodant norima simboli, kai kvieciama GetCSV funkcija: \fCGetCSV($deadLinkai, ';');\fP
+.br
+ trumpi video, kaip naudotis:
+.IP "\(bu" 2
+Rasta mirusiu linku: \fC\fP
+.IP "\(bu" 2
+Nerasta mirusiu linku: \fC\fP 
+.PP
+

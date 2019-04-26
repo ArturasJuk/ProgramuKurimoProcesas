@@ -1,0 +1,132 @@
+.TH "finder.php" 3 "Fri Apr 26 2019" "Version 2.0." "finder" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+finder.php
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBrel2abs\fP ($rel, $base)"
+.br
+.RI "transforms relative links to absolute links` "
+.ti -1c
+.RI "\fBbfs\fP ($home_url)"
+.br
+.RI "Takes home url of some site, returns array of dead links\&. "
+.ti -1c
+.RI "\fBGetCSV\fP ($deadLinkai, $separator=',')"
+.br
+.RI "creates \&.csv file with deadlink information\&. Takes array of deadLinks, formats them and returns as a single string, each property is separated by separator character each deadlink is separated by new line "
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "\fB$websiteUrl\fP = (array_key_exists(1, $argv)) ? (string)$argv[1] : 'https://dead\-links\&.freesite\&.host/'"
+.br
+.ti -1c
+.RI "\fB$deadLinkai\fP = \fBbfs\fP($websiteUrl)"
+.br
+.ti -1c
+.RI "\fB$output\fP = \fBGetCSV\fP($deadLinkai)"
+.br
+.ti -1c
+.RI "if(count($deadLinkai) > 0) \fBelse\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+php file that contains the dead link finder script\&. 
+.PP
+\fBAuthor:\fP
+.RS 4
+Prif163 arturas.juknevicius@stud.vgtu.lt 
+.RE
+.PP
+\fBCopyright:\fP
+.RS 4
+Copyright (C) 2019 VGTU\&. All rights reserved\&. @license GNU General Public License version 2 or later 
+.RE
+.PP
+
+.SH "Function Documentation"
+.PP 
+.SS "bfs ( $home_url)"
+
+.PP
+Takes home url of some site, returns array of dead links\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$home_url\fP the home URL where the dead link finding starts\&. Should be landing page URL 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+$result array of deadlinks and info [[deadLink, whereFound, whyDead], [deadLink, whereFound, whyDead], \&.\&.\&.] 
+.RE
+.PP
+\fBExceptions:\fP
+.RS 4
+\fIe\fP throws exeption if downloaded address is empty The functionn performs a breath-first search trough the provided website FInds all links in current URL, tries to download them and if it can't adds to deadliink result array 
+.RE
+.PP
+
+.SS "GetCSV ( $deadLinkai,  $separator = \fC','\fP)"
+
+.PP
+creates \&.csv file with deadlink information\&. Takes array of deadLinks, formats them and returns as a single string, each property is separated by separator character each deadlink is separated by new line 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$deadLinkai\fP array of dealink items, each deadlink has 3 values([deadLink, whereFound, whyDead]) 
+.br
+\fI$separator\fP optional separator character for CSV files, default value is ',' 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+$output string formatted CSV file content, each cell is surrounded with double quotes('), for each deadlink 3 collums are created(['Deadlink url', 'Found in', 'Response"]) 
+.RE
+.PP
+
+.SS "rel2abs ( $rel,  $base)"
+
+.PP
+transforms relative links to absolute links` 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$rel\fP linked passed to functioned\&. assumed to be realtive\&. 
+.br
+\fI$base\fP URL where the relative linkw as found 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+$scheme\&.'://'\&.$abs absolute link The function checks if the passed, assumed relative, link is actually relative\&. If it's absolute it returns the passed link, otherwise it transforms teh link to an absolute link 
+.RE
+.PP
+
+.SH "Variable Documentation"
+.PP 
+.SS "$deadLinkai = \fBbfs\fP($websiteUrl)"
+holds array with deadlinks and information about them 
+.SS "$output = \fBGetCSV\fP($deadLinkai)"
+holds formated \&.CSV file content 
+.SS "$websiteUrl = (array_key_exists(1, $argv)) ? (string)$argv[1] : 'https://dead\-links\&.freesite\&.host/'"
+Holds link to website that needs to be checked\&. Takes passed argument\&. If no argument was passed, it checks a default address\&. 
+.SS "if (count( $deadLinkai) > 0) else"
+\fBInitial value:\fP
+.PP
+.nf
+{
+    echo "\nCheck completed, no deadlinks were found\&.\n"
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for finder from the source code\&.
