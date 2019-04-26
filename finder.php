@@ -132,6 +132,8 @@
     return $output;
   }
 
+  error_reporting( error_reporting() & ~E_NOTICE ); /**< Disables E_NOTICE from reporting"*/
+
   $websiteUrl = (array_key_exists(1, $argv)) ? (string)$argv[1] : "https://dead-links.freesite.host/";
   echo "\nChecking for deadlinks in \"" . $websiteUrl . "\"\n";
 
