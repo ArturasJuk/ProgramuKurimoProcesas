@@ -133,7 +133,7 @@
   }
 
   $websiteUrl = (array_key_exists(1, $argv)) ? (string)$argv[1] : "https://dead-links.freesite.host/";
-  echo "\nChecking for deadlinks in " . $websiteUrl . ")\n";
+  echo "\nChecking for deadlinks in \"" . $websiteUrl . "\"\n";
 
   $deadLinkai = bfs($websiteUrl);
 
