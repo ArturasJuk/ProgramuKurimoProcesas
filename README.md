@@ -1,6 +1,4 @@
-# Dead link finder
-
-## Naudojimas:
+# Dead link finder, kaip naudotis:
 1. atsidaryti projekto direktorijoje terminala
 2. programa paleidziama terminale rasant: <br/>
 `php finder.php url`<br/>
